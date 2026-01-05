@@ -1,0 +1,1263 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CVE-2025-55182 (React2Shell) Educational Demo</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    Oxygen, Ubuntu, Cantarell, sans-serif;
+                background: #f5f5f5;
+                padding: 20px;
+            }
+
+            .header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .header h1 {
+                margin-bottom: 10px;
+                font-size: 28px;
+            }
+
+            .header p {
+                opacity: 0.9;
+                line-height: 1.6;
+            }
+
+            .warning-banner {
+                background: #ff6b6b;
+                color: white;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                font-weight: 500;
+            }
+
+            .container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+
+            .panel {
+                background: white;
+                border-radius: 10px;
+                padding: 25px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .panel-header {
+                display: flex;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #eee;
+            }
+
+            .panel-header h2 {
+                font-size: 22px;
+                flex: 1;
+            }
+
+            .badge {
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+
+            .badge-danger {
+                background: #ff6b6b;
+                color: white;
+            }
+
+            .badge-success {
+                background: #51cf66;
+                color: white;
+            }
+
+            .demo-section {
+                margin-bottom: 25px;
+            }
+
+            .demo-section h3 {
+                font-size: 16px;
+                margin-bottom: 12px;
+                color: #495057;
+            }
+
+            .button-group {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            button {
+                padding: 12px 20px;
+                border: none;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+                text-align: left;
+            }
+
+            button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            }
+
+            button:active {
+                transform: translateY(0);
+            }
+
+            .btn-safe {
+                background: #e3f2fd;
+                color: #1976d2;
+            }
+
+            .btn-safe:hover {
+                background: #bbdefb;
+            }
+
+            .btn-danger {
+                background: #ffebee;
+                color: #c62828;
+            }
+
+            .btn-danger:hover {
+                background: #ffcdd2;
+            }
+
+            .btn-secure {
+                background: #e8f5e9;
+                color: #2e7d32;
+            }
+
+            .btn-secure:hover {
+                background: #c8e6c9;
+            }
+
+            .input-group {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 15px;
+                align-items: center;
+            }
+
+            input,
+            select {
+                padding: 10px;
+                border: 2px solid #e0e0e0;
+                border-radius: 6px;
+                font-size: 14px;
+                flex: 1;
+            }
+
+            input:focus,
+            select:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+
+            .output-box {
+                background: #f8f9fa;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 15px;
+                margin-top: 15px;
+                min-height: 150px;
+                font-family: "Courier New", monospace;
+                font-size: 13px;
+                line-height: 1.6;
+                overflow-y: auto;
+                max-height: 400px;
+            }
+
+            .terminal {
+                background: #1e1e1e;
+                color: #00ff00;
+                border-radius: 8px;
+                padding: 15px;
+                margin-top: 15px;
+                min-height: 150px;
+                font-family: "Courier New", monospace;
+                font-size: 13px;
+                line-height: 1.6;
+                overflow-y: auto;
+                max-height: 400px;
+                border: 2px solid #333;
+            }
+
+            .terminal-header {
+                color: #ffff00;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+
+            .terminal-prompt {
+                color: #00ffff;
+            }
+
+            .terminal-error {
+                color: #ff6b6b;
+            }
+
+            .terminal-success {
+                color: #51cf66;
+            }
+
+            .send-request-btn {
+                background: #667eea;
+                color: white;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                margin-top: 15px;
+                width: 100%;
+                transition: all 0.2s;
+            }
+
+            .send-request-btn:hover {
+                background: #5568d3;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+            }
+
+            .send-request-btn:active {
+                transform: translateY(0);
+            }
+
+            .send-request-btn:disabled {
+                background: #ccc;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            .output-box.has-content {
+                border-color: #667eea;
+            }
+
+            .mitm-section {
+                background: white;
+                border-radius: 10px;
+                padding: 25px;
+                margin-top: 20px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .mitm-header {
+                font-size: 22px;
+                margin-bottom: 20px;
+                color: #495057;
+            }
+
+            .mitm-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            .mitm-panel {
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 15px;
+            }
+
+            .mitm-panel h4 {
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #e0e0e0;
+            }
+
+            .http-panel {
+                border-color: #ff6b6b;
+                background: #fff5f5;
+            }
+
+            .https-panel {
+                border-color: #51cf66;
+                background: #f0fdf4;
+            }
+
+            .intercepted-traffic {
+                background: #1e1e1e;
+                color: #00ff00;
+                padding: 12px;
+                border-radius: 6px;
+                font-family: "Courier New", monospace;
+                font-size: 12px;
+                line-height: 1.5;
+                margin-top: 10px;
+                min-height: 120px;
+            }
+
+            .readable {
+                color: #ff6b6b;
+            }
+
+            .encrypted {
+                color: #888;
+            }
+
+            @media (max-width: 1024px) {
+                .mitm-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .output-entry {
+                margin-bottom: 15px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .output-entry:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+            .output-label {
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 5px;
+            }
+
+            .output-value {
+                color: #212529;
+                word-wrap: break-word;
+            }
+
+            .output-success {
+                color: #2e7d32;
+            }
+
+            .output-error {
+                color: #c62828;
+            }
+
+            .output-warning {
+                color: #f57c00;
+            }
+
+            .explanation {
+                background: #fff3cd;
+                border-left: 4px solid #ffc107;
+                padding: 15px;
+                border-radius: 4px;
+                margin-top: 20px;
+            }
+
+            .explanation h4 {
+                margin-bottom: 8px;
+                color: #856404;
+            }
+
+            .explanation ul {
+                margin-left: 20px;
+                color: #856404;
+            }
+
+            .explanation li {
+                margin-bottom: 5px;
+            }
+
+            .footer {
+                background: white;
+                padding: 25px;
+                border-radius: 10px;
+                margin-top: 20px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .footer h3 {
+                margin-bottom: 15px;
+                color: #495057;
+            }
+
+            .footer-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            .info-box {
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 6px;
+                border-left: 4px solid #667eea;
+            }
+
+            .info-box h4 {
+                margin-bottom: 8px;
+                color: #495057;
+            }
+
+            .info-box p {
+                font-size: 14px;
+                line-height: 1.6;
+                color: #6c757d;
+            }
+
+            @media (max-width: 1024px) {
+                .container {
+                    grid-template-columns: 1fr;
+                }
+
+                .footer-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .status-indicator {
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                margin-right: 8px;
+            }
+
+            .status-vulnerable {
+                background: #ff6b6b;
+                box-shadow: 0 0 8px rgba(255, 107, 107, 0.5);
+            }
+
+            .status-secure {
+                background: #51cf66;
+                box-shadow: 0 0 8px rgba(81, 207, 102, 0.5);
+            }
+
+            code {
+                background: #f1f3f5;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-family: "Courier New", monospace;
+                font-size: 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>🔐 CVE-2025-55182 (React2Shell) Educational Demonstration</h1>
+            <p>
+                Interactive comparison of <strong>vulnerable</strong> vs
+                <strong>secure</strong> deserialization
+            </p>
+            <p style="margin-top: 10px; font-size: 14px">
+                This demonstrates the type of vulnerability that affected React
+                Server Components - CVSS 10.0/10.0 (Maximum Severity)
+            </p>
+        </div>
+
+        <div class="warning-banner">
+            ⚠️ <strong>Educational Purpose Only:</strong> This page contains
+            simulated vulnerabilities for learning. Never implement vulnerable
+            code in production systems!
+        </div>
+
+        <div class="container">
+            <!-- VULNERABLE SIDE -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>
+                        <span class="status-indicator status-vulnerable"></span
+                        >Vulnerable Implementation
+                    </h2>
+                    <span class="badge badge-danger">Insecure</span>
+                </div>
+
+                <div class="demo-section">
+                    <h3>❌ The Problem: Insecure Deserialization</h3>
+                    <p
+                        style="
+                            font-size: 14px;
+                            color: #6c757d;
+                            margin-bottom: 15px;
+                        "
+                    >
+                        Server blindly trusts and executes user input without
+                        validation
+                    </p>
+
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            id="vuln-a"
+                            value="10"
+                            placeholder="Number A"
+                        />
+                        <select id="vuln-op">
+                            <option value="+">Add (+)</option>
+                            <option value="-">Subtract (-)</option>
+                            <option value="*">Multiply (×)</option>
+                            <option value="/">Divide (÷)</option>
+                        </select>
+                        <input
+                            type="text"
+                            id="vuln-b"
+                            value="5"
+                            placeholder="Number B"
+                        />
+                    </div>
+
+                    <div class="button-group">
+                        <button
+                            class="btn-safe"
+                            onclick="sendVulnerableCalculation()"
+                        >
+                            🧮 Safe Example: Calculate
+                        </button>
+
+                        <button
+                            class="btn-danger"
+                            onclick="sendVulnerable('Math.random()')"
+                        >
+                            ⚠️ Execute: Generate Random Number
+                        </button>
+
+                        <button
+                            class="btn-danger"
+                            onclick="sendVulnerable('new Date().toISOString()')"
+                        >
+                            ⚠️ Execute: Get Server Time
+                        </button>
+
+                        <button
+                            class="btn-danger"
+                            onclick="sendVulnerable('navigator.userAgent')"
+                        >
+                            ⚠️ Execute: Read Browser Info
+                        </button>
+
+                        <button
+                            class="btn-danger"
+                            onclick="sendVulnerable('document.cookie')"
+                        >
+                            🚨 Execute: Access Cookies (Data Theft!)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="terminal" id="vulnerable-terminal">
+                    <div class="terminal-header">📡 HTTP Request Preview</div>
+                    <div
+                        style="color: #888; text-align: center; padding: 40px 0"
+                    >
+                        Click a button above to see the HTTP request
+                    </div>
+                </div>
+
+                <button
+                    class="send-request-btn hidden"
+                    id="vulnerable-send-btn"
+                    onclick="executePendingRequest('vulnerable')"
+                >
+                    🚀 Send Request
+                </button>
+
+                <div class="output-box" id="vulnerable-output">
+                    <div
+                        style="
+                            color: #6c757d;
+                            text-align: center;
+                            padding: 40px 0;
+                        "
+                    >
+                        Response will appear here after sending request
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h4>🔴 Why This Is Dangerous:</h4>
+                    <ul>
+                        <li>Uses <code>eval()</code> on user input</li>
+                        <li>No validation or sanitization</li>
+                        <li>Attacker can execute ANY code</li>
+                        <li>Similar to CVE-2025-55182 concept</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SECURE SIDE -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>
+                        <span class="status-indicator status-secure"></span
+                        >Secure Implementation
+                    </h2>
+                    <span class="badge badge-success">Protected</span>
+                </div>
+
+                <div class="demo-section">
+                    <h3>✅ The Solution: Input Validation & Whitelisting</h3>
+                    <p
+                        style="
+                            font-size: 14px;
+                            color: #6c757d;
+                            margin-bottom: 15px;
+                        "
+                    >
+                        Server validates all input against strict rules
+                    </p>
+
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            id="secure-a"
+                            value="10"
+                            placeholder="Number A"
+                        />
+                        <select id="secure-op">
+                            <option value="add">Add (+)</option>
+                            <option value="subtract">Subtract (-)</option>
+                            <option value="multiply">Multiply (×)</option>
+                            <option value="divide">Divide (÷)</option>
+                        </select>
+                        <input
+                            type="text"
+                            id="secure-b"
+                            value="5"
+                            placeholder="Number B"
+                        />
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secure" onclick="sendSecure()">
+                            ✅ Calculate (Validated)
+                        </button>
+
+                        <button
+                            class="btn-danger"
+                            onclick="attemptInject('Math.random()')"
+                        >
+                            🛡️ Try Injection: Math.random()
+                        </button>
+
+                        <button
+                            class="btn-danger"
+                            onclick="attemptInject('process.version')"
+                        >
+                            🛡️ Try Injection: process.version
+                        </button>
+
+                        <button
+                            class="btn-danger"
+                            onclick="attemptInject('document.cookie')"
+                        >
+                            🛡️ Try Injection: document.cookie
+                        </button>
+                    </div>
+                </div>
+
+                <div class="terminal" id="secure-terminal">
+                    <div class="terminal-header">📡 HTTP Request Preview</div>
+                    <div
+                        style="color: #888; text-align: center; padding: 40px 0"
+                    >
+                        Click a button above to see the HTTP request
+                    </div>
+                </div>
+
+                <button
+                    class="send-request-btn hidden"
+                    id="secure-send-btn"
+                    onclick="executePendingRequest('secure')"
+                >
+                    🚀 Send Request
+                </button>
+
+                <div class="output-box" id="secure-output">
+                    <div
+                        style="
+                            color: #6c757d;
+                            text-align: center;
+                            padding: 40px 0;
+                        "
+                    >
+                        Response will appear here after sending request
+                    </div>
+                </div>
+
+                <div class="explanation">
+                    <h4>🟢 Security Improvements:</h4>
+                    <ul>
+                        <li>Whitelisted operations only</li>
+                        <li>Type validation (numbers only)</li>
+                        <li>No arbitrary code execution</li>
+                        <li>Structured input validation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mitm-section">
+            <h3 class="mitm-header">
+                🔍 HTTP vs HTTPS: Man-in-the-Middle Attack Demonstration
+            </h3>
+
+            <div class="explanation" style="margin-bottom: 20px">
+                <h4>📡 What Does an Attacker See?</h4>
+                <p style="color: #856404; margin-top: 10px">
+                    When you send data over the network, an attacker performing
+                    a Man-in-the-Middle (MITM) attack can intercept the traffic.
+                    <strong>HTTP sends data in plain text</strong> (readable),
+                    while <strong>HTTPS encrypts the data</strong> (unreadable
+                    gibberish). Click any button above to see what an attacker
+                    would intercept:
+                </p>
+            </div>
+
+            <div class="mitm-grid" id="mitm-comparison">
+                <div class="mitm-panel http-panel">
+                    <h4>🔓 HTTP Traffic (Unencrypted)</h4>
+                    <p
+                        style="
+                            font-size: 13px;
+                            color: #c62828;
+                            margin-bottom: 10px;
+                        "
+                    >
+                        <strong>⚠️ VULNERABLE:</strong> Attacker can read
+                        everything in plain text!
+                    </p>
+                    <div class="intercepted-traffic" id="http-traffic">
+                        <div
+                            style="
+                                color: #888;
+                                text-align: center;
+                                padding: 20px;
+                            "
+                        >
+                            Click any button above to see what an attacker would
+                            intercept
+                        </div>
+                    </div>
+                    <p
+                        style="
+                            font-size: 12px;
+                            color: #c62828;
+                            margin-top: 10px;
+                        "
+                    >
+                        ❌ Attacker sees: passwords, session tokens, personal
+                        data, API keys - EVERYTHING!
+                    </p>
+                </div>
+
+                <div class="mitm-panel https-panel">
+                    <h4>🔒 HTTPS Traffic (Encrypted)</h4>
+                    <p
+                        style="
+                            font-size: 13px;
+                            color: #2e7d32;
+                            margin-bottom: 10px;
+                        "
+                    >
+                        <strong>✅ PROTECTED:</strong> Attacker only sees
+                        encrypted gibberish!
+                    </p>
+                    <div class="intercepted-traffic" id="https-traffic">
+                        <div
+                            style="
+                                color: #888;
+                                text-align: center;
+                                padding: 20px;
+                            "
+                        >
+                            Same request but encrypted - unreadable to attackers
+                        </div>
+                    </div>
+                    <p
+                        style="
+                            font-size: 12px;
+                            color: #2e7d32;
+                            margin-top: 10px;
+                        "
+                    >
+                        ✅ Attacker cannot read the content - data is encrypted!
+                    </p>
+                </div>
+            </div>
+
+            <div
+                class="explanation"
+                style="margin-top: 20px; display: none"
+                id="mitm-explanation"
+            >
+                <h4>🎓 Key Takeaway:</h4>
+                <p style="color: #856404; margin-top: 10px">
+                    <strong>HTTPS encrypts data in transit</strong>, protecting
+                    against eavesdropping and MITM attacks. However,
+                    <strong
+                        >HTTPS does NOT protect against application
+                        vulnerabilities</strong
+                    >
+                    like the insecure deserialization shown above. Once the
+                    encrypted data reaches the server and is decrypted,
+                    vulnerable server code can still be exploited. <br /><br />
+                    <strong>Defense requires BOTH:</strong><br />
+                    • HTTPS for transport security (encryption)<br />
+                    • Secure coding practices for application security (input
+                    validation, sanitization)
+                </p>
+            </div>
+        </div>
+
+        <script>
+            // Simulated "server-side" logic running in browser for demonstration
+
+            // Store pending requests
+            let pendingRequest = {
+                vulnerable: null,
+                secure: null,
+            };
+
+            function addOutput(containerId, content) {
+                const output = document.getElementById(containerId);
+                if (output.querySelector('div[style*="text-align: center"]')) {
+                    output.innerHTML = "";
+                }
+                output.classList.add("has-content");
+
+                const entry = document.createElement("div");
+                entry.className = "output-entry";
+                entry.innerHTML = content;
+
+                output.insertBefore(entry, output.firstChild);
+            }
+
+            function showTerminal(terminalId, content) {
+                const terminal = document.getElementById(terminalId);
+                terminal.innerHTML =
+                    '<div class="terminal-header">📡 HTTP Request Preview</div>' +
+                    content;
+            }
+
+            function showSendButton(buttonId) {
+                const button = document.getElementById(buttonId);
+                button.classList.remove("hidden");
+            }
+
+            function hideSendButton(buttonId) {
+                const button = document.getElementById(buttonId);
+                button.classList.add("hidden");
+            }
+
+            // VULNERABLE IMPLEMENTATION
+            function sendVulnerable(action) {
+                const timestamp = new Date().toLocaleTimeString();
+
+                // Store the action for later execution
+                pendingRequest.vulnerable = action;
+
+                // Determine if this looks like a safe calculation or malicious code
+                const isSafeCalculation = /^[\d\s\+\-\*\/\(\)\.]+$/.test(
+                    action,
+                );
+
+                let warningMessage;
+                if (isSafeCalculation) {
+                    warningMessage = `
+<div style="margin-top: 15px; color: #51cf66;">✓ Request contains: Simple calculation</div>
+<div style="color: #ffff00; margin-top: 5px;">⚠️  But server accepts ANY code - vulnerable to injection!</div>
+<div style="color: #00ffff; margin-top: 10px;">Press "Send Request" button to execute...</div>`;
+                } else {
+                    warningMessage = `
+<div style="margin-top: 15px; color: #ffff00;">⚠️  Request ready to send</div>
+<div style="color: #ff6b6b; margin-top: 5px;">🚨 WARNING: This contains executable code that will run on the server!</div>
+<div style="color: #00ffff; margin-top: 10px;">Press "Send Request" button to execute...</div>`;
+                }
+
+                // Get current URL for realistic display
+                const currentUrl = window.location.origin;
+
+                // Show HTTP request in terminal
+                const requestPreview = `
+<div class="terminal-prompt">$ curl -X POST ${currentUrl}/api/vulnerable/execute</div>
+<div class="terminal-prompt">  -H "Content-Type: application/json"</div>
+<div class="terminal-prompt">  -d '{</div>
+<div class="terminal-prompt">    "action": "${escapeHtml(action)}"</div>
+<div class="terminal-prompt">  }'</div>
+${warningMessage}
+                `;
+
+                showTerminal("vulnerable-terminal", requestPreview);
+                showSendButton("vulnerable-send-btn");
+
+                // Clear previous output
+                const output = document.getElementById("vulnerable-output");
+                output.innerHTML =
+                    '<div style="color: #6c757d; text-align: center; padding: 40px 0;">Waiting for request to be sent...</div>';
+            }
+
+            function executePendingRequest(type) {
+                if (
+                    type === "vulnerable" &&
+                    pendingRequest.vulnerable !== null
+                ) {
+                    const action = pendingRequest.vulnerable;
+                    executeVulnerableRequest(action);
+
+                    // Show MITM traffic comparison
+                    showMITMTraffic("/api/vulnerable/execute", {
+                        action: action,
+                    });
+
+                    pendingRequest.vulnerable = null;
+                    hideSendButton("vulnerable-send-btn");
+                } else if (
+                    type === "secure" &&
+                    pendingRequest.secure !== null
+                ) {
+                    const data = pendingRequest.secure;
+                    executeSecureRequest(data);
+
+                    // Show MITM traffic comparison
+                    if (data.type === "calculate") {
+                        showMITMTraffic("/api/secure/calculate", {
+                            operation: data.operation,
+                            a: isNaN(parseFloat(data.aValue))
+                                ? data.aValue
+                                : parseFloat(data.aValue),
+                            b: isNaN(parseFloat(data.bValue))
+                                ? data.bValue
+                                : parseFloat(data.bValue),
+                        });
+                    } else if (data.type === "inject") {
+                        showMITMTraffic("/api/secure/execute", {
+                            action: data.maliciousCode,
+                        });
+                    }
+
+                    pendingRequest.secure = null;
+                    hideSendButton("secure-send-btn");
+                }
+            }
+
+            function executeVulnerableRequest(action) {
+                const timestamp = new Date().toLocaleTimeString();
+
+                try {
+                    // THIS IS THE VULNERABILITY - NEVER DO THIS IN REAL CODE
+                    const result = eval(action);
+
+                    addOutput(
+                        "vulnerable-output",
+                        `
+          <div class="output-label">🕐 ${timestamp}</div>
+          <div class="output-label">📤 Input Sent:</div>
+          <div class="output-value output-warning">${escapeHtml(action)}</div>
+          <div class="output-label" style="margin-top: 10px;">⚡ Server Executed Code:</div>
+          <div class="output-value output-error"><strong>YES - Arbitrary code was executed!</strong></div>
+          <div class="output-label" style="margin-top: 10px;">📥 Result:</div>
+          <div class="output-value">${escapeHtml(String(result))}</div>
+          <div style="margin-top: 10px; padding: 10px; background: #ffebee; border-radius: 4px; color: #c62828;">
+            <strong>⚠️ VULNERABILITY EXPLOITED:</strong> The server executed untrusted code without validation!
+          </div>
+        `,
+                    );
+                } catch (error) {
+                    addOutput(
+                        "vulnerable-output",
+                        `
+          <div class="output-label">🕐 ${timestamp}</div>
+          <div class="output-label">📤 Input Sent:</div>
+          <div class="output-value output-warning">${escapeHtml(action)}</div>
+          <div class="output-label" style="margin-top: 10px;">❌ Error:</div>
+          <div class="output-value output-error">${escapeHtml(error.message)}</div>
+          <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 4px; color: #856404;">
+            <strong>Note:</strong> Error occurred, but code was still attempted to execute!
+          </div>
+        `,
+                    );
+                }
+            }
+
+            // SECURE IMPLEMENTATION
+            const ALLOWED_OPERATIONS = {
+                add: (a, b) => a + b,
+                subtract: (a, b) => a - b,
+                multiply: (a, b) => a * b,
+                divide: (a, b) => (b !== 0 ? a / b : "Error: Division by zero"),
+            };
+
+            function sendSecure() {
+                const timestamp = new Date().toLocaleTimeString();
+                const aValue = document.getElementById("secure-a").value;
+                const bValue = document.getElementById("secure-b").value;
+                const operation = document.getElementById("secure-op").value;
+
+                // Store the RAW values for later execution
+                pendingRequest.secure = {
+                    aValue,
+                    bValue,
+                    operation,
+                    type: "calculate",
+                };
+
+                // Get current URL for realistic display
+                const currentUrl = window.location.origin;
+
+                // Determine how to display the values in JSON (show actual input)
+                const aParsed = parseFloat(aValue);
+                const bParsed = parseFloat(bValue);
+
+                const aDisplay =
+                    !isNaN(aParsed) && aValue.trim() !== ""
+                        ? aParsed
+                        : `"${escapeHtml(aValue)}"`;
+                const bDisplay =
+                    !isNaN(bParsed) && bValue.trim() !== ""
+                        ? bParsed
+                        : `"${escapeHtml(bValue)}"`;
+
+                // Show HTTP request in terminal
+                const requestPreview = `
+<div class="terminal-prompt">$ curl -X POST ${currentUrl}/api/secure/calculate</div>
+<div class="terminal-prompt">  -H "Content-Type: application/json"</div>
+<div class="terminal-prompt">  -d '{</div>
+<div class="terminal-prompt">    "operation": "${escapeHtml(operation)}",</div>
+<div class="terminal-prompt">    "a": ${aDisplay},</div>
+<div class="terminal-prompt">    "b": ${bDisplay}</div>
+<div class="terminal-prompt">  }'</div>
+<div style="margin-top: 15px; color: #51cf66;">✓ Request ready to send</div>
+<div style="color: #00ffff; margin-top: 10px;">Press "Send Request" button to execute...</div>
+                `;
+
+                showTerminal("secure-terminal", requestPreview);
+                showSendButton("secure-send-btn");
+
+                // Clear previous output
+                const output = document.getElementById("secure-output");
+                output.innerHTML =
+                    '<div style="color: #6c757d; text-align: center; padding: 40px 0;">Waiting for request to be sent...</div>';
+            }
+
+            function executeSecureRequest(data) {
+                const timestamp = new Date().toLocaleTimeString();
+                const { aValue, bValue, operation, type } = data;
+
+                if (type === "calculate") {
+                    const a = parseFloat(aValue);
+                    const b = parseFloat(bValue);
+                    executeSecureCalculation(a, b, operation, timestamp);
+                } else if (type === "inject") {
+                    executeSecureInjection(data.maliciousCode, timestamp);
+                }
+            }
+
+            function executeSecureCalculation(a, b, operation, timestamp) {
+                // VALIDATION #1: Check if inputs are valid numbers
+                if (isNaN(a) || isNaN(b)) {
+                    addOutput(
+                        "secure-output",
+                        `
+          <div class="output-label">🕐 ${timestamp}</div>
+          <div class="output-label">🛡️ Validation Failed:</div>
+          <div class="output-value output-error">INPUT TYPE VALIDATION</div>
+          <div style="margin-top: 10px; padding: 10px; background: #e8f5e9; border-radius: 4px; color: #2e7d32;">
+            <strong>✅ SECURITY PASSED:</strong> Invalid inputs were rejected. Only numbers allowed!
+          </div>
+        `,
+                    );
+                    return;
+                }
+
+                // VALIDATION #2: Check if operation is whitelisted
+                if (!(operation in ALLOWED_OPERATIONS)) {
+                    addOutput(
+                        "secure-output",
+                        `
+          <div class="output-label">🕐 ${timestamp}</div>
+          <div class="output-label">🛡️ Validation Failed:</div>
+          <div class="output-value output-error">OPERATION NOT WHITELISTED</div>
+          <div style="margin-top: 10px; padding: 10px; background: #e8f5e9; border-radius: 4px; color: #2e7d32;">
+            <strong>✅ SECURITY PASSED:</strong> Only specific operations are allowed!
+          </div>
+        `,
+                    );
+                    return;
+                }
+
+                // SAFE EXECUTION
+                const result = ALLOWED_OPERATIONS[operation](a, b);
+
+                addOutput(
+                    "secure-output",
+                    `
+        <div class="output-label">🕐 ${timestamp}</div>
+        <div class="output-label">📤 Validated Input:</div>
+        <div class="output-value">Operation: <strong>${operation}</strong>, A: <strong>${a}</strong>, B: <strong>${b}</strong></div>
+        <div class="output-label" style="margin-top: 10px;">✅ Validation Checks Passed:</div>
+        <div class="output-value output-success">
+          ✓ Type validation (numbers only)<br>
+          ✓ Operation whitelisted<br>
+          ✓ No arbitrary code execution
+        </div>
+        <div class="output-label" style="margin-top: 10px;">📥 Result:</div>
+        <div class="output-value"><strong>${result}</strong></div>
+        <div style="margin-top: 10px; padding: 10px; background: #e8f5e9; border-radius: 4px; color: #2e7d32;">
+          <strong>✅ SECURE:</strong> Input was validated and only allowed operations were executed!
+        </div>
+      `,
+                );
+            }
+
+            function attemptInject(maliciousCode) {
+                // Store the injection attempt for later execution
+                pendingRequest.secure = { maliciousCode, type: "inject" };
+
+                // Get current URL for realistic display
+                const currentUrl = window.location.origin;
+
+                // Show HTTP request in terminal
+                const requestPreview = `
+<div class="terminal-prompt">$ curl -X POST ${currentUrl}/api/secure/execute</div>
+<div class="terminal-prompt">  -H "Content-Type: application/json"</div>
+<div class="terminal-prompt">  -d '{</div>
+<div class="terminal-prompt">    "action": "${escapeHtml(maliciousCode)}"</div>
+<div class="terminal-prompt">  }'</div>
+<div style="margin-top: 15px; color: #ffff00;">⚠️  Malicious payload detected in request</div>
+<div style="color: #ff6b6b; margin-top: 5px;">🚨 This is an injection attempt!</div>
+<div style="color: #00ffff; margin-top: 10px;">Press "Send Request" to see how the secure server handles it...</div>
+                `;
+
+                showTerminal("secure-terminal", requestPreview);
+                showSendButton("secure-send-btn");
+
+                // Clear previous output
+                const output = document.getElementById("secure-output");
+                output.innerHTML =
+                    '<div style="color: #6c757d; text-align: center; padding: 40px 0;">Waiting for request to be sent...</div>';
+
+                // Show MITM traffic comparison
+                showMITMTraffic("/api/secure/execute", {
+                    action: maliciousCode,
+                });
+            }
+
+            function executeSecureInjection(maliciousCode, timestamp) {
+                // Try to inject malicious code into the "operation" field
+                addOutput(
+                    "secure-output",
+                    `
+        <div class="output-label">🕐 ${timestamp}</div>
+        <div class="output-label">🚨 Injection Attempt:</div>
+        <div class="output-value output-warning">${escapeHtml(maliciousCode)}</div>
+        <div class="output-label" style="margin-top: 10px;">🛡️ Security Response:</div>
+        <div class="output-value output-error"><strong>BLOCKED - Operation not in whitelist</strong></div>
+        <div style="margin-top: 10px; padding: 10px; background: #e8f5e9; border-radius: 4px; color: #2e7d32;">
+          <strong>✅ ATTACK PREVENTED:</strong><br>
+          • Malicious input detected<br>
+          • Not in allowed operations list<br>
+          • Request rejected before execution<br>
+          • No code was executed on server
+        </div>
+        <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 4px; color: #856404;">
+          <strong>Compare to vulnerable side:</strong> The same input would execute on the vulnerable server!
+        </div>
+      `,
+                );
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // MITM Demo function - generate random hex for encrypted traffic
+            function generateEncryptedData(length) {
+                const hexChars = "0123456789abcdef";
+                let result = "";
+                for (let i = 0; i < length; i++) {
+                    if (i > 0 && i % 30 === 0) result += "\n";
+                    else if (i > 0 && i % 2 === 0) result += " ";
+                    result +=
+                        hexChars[Math.floor(Math.random() * hexChars.length)];
+                }
+                return result;
+            }
+
+            function showMITMTraffic(endpoint, payload) {
+                const httpTraffic = document.getElementById("http-traffic");
+                const httpsTraffic = document.getElementById("https-traffic");
+
+                // Show HTTP traffic (readable plain text)
+                const httpContent = `
+<div class="readable">POST ${endpoint} HTTP/1.1</div>
+<div class="readable">Host: ${window.location.host || "localhost"}</div>
+<div class="readable">Content-Type: application/json</div>
+<div class="readable">Cookie: sessionId=abc123xyz789</div>
+<div class="readable">Authorization: Bearer eyJhbGciOiJIUzI1...</div>
+<div class="readable" style="margin-top: 8px;">${escapeHtml(JSON.stringify(payload, null, 2))}</div>
+                `;
+                httpTraffic.innerHTML = httpContent;
+
+                // Show HTTPS traffic (encrypted gibberish)
+                const encryptedHex = generateEncryptedData(120);
+                const httpsContent = `
+<div class="encrypted">POST ${endpoint} HTTP/1.1</div>
+<div class="encrypted">Host: ${window.location.host || "localhost"}</div>
+<div class="encrypted" style="margin-top: 8px;">--- ENCRYPTED TLS 1.3 PAYLOAD ---</div>
+<div class="encrypted" style="margin-top: 5px; line-height: 1.8;">${encryptedHex}</div>
+<div class="encrypted" style="margin-top: 5px;">...</div>
+<div class="encrypted" style="margin-top: 8px; color: #888;">🔒 Headers and body encrypted - unreadable!</div>
+                `;
+                httpsTraffic.innerHTML = httpsContent;
+
+                // Show explanation
+                const explanation = document.getElementById("mitm-explanation");
+                if (explanation) {
+                    explanation.style.display = "block";
+                }
+
+                // Scroll to MITM section
+                // document
+                //     .getElementById("mitm-comparison")
+                //     .scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+
+            // Show welcome message
+            window.addEventListener("load", () => {
+                console.log(
+                    "%c🎓 CVE-2025-55182 Educational Demo",
+                    "font-size: 20px; font-weight: bold; color: #667eea;",
+                );
+                console.log(
+                    "%cThis page demonstrates insecure deserialization vulnerabilities",
+                    "font-size: 14px; color: #6c757d;",
+                );
+                console.log(
+                    "%cFor educational purposes only!",
+                    "font-size: 14px; color: #ff6b6b; font-weight: bold;",
+                );
+            });
+        </script>
+    </body>
+</html>
