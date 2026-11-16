@@ -462,18 +462,6 @@
         </style>
     </head>
     <body>
-        <div class="header">
-            <h1>🔐 CVE-2025-55182 (React2Shell) Educational Demonstration</h1>
-            <p>
-                Interactive comparison of <strong>vulnerable</strong> vs
-                <strong>secure</strong> deserialization
-            </p>
-            <p style="margin-top: 10px; font-size: 14px">
-                This demonstrates the type of vulnerability that affected React
-                Server Components - CVSS 10.0/10.0 (Maximum Severity)
-            </p>
-        </div>
-
         <div class="warning-banner">
             ⚠️ <strong>Educational Purpose Only:</strong> This page contains
             simulated vulnerabilities for learning. Never implement vulnerable
@@ -869,6 +857,16 @@
             }
 
             // VULNERABLE IMPLEMENTATION
+            function sendVulnerableCalculation() {
+                const a = document.getElementById("vuln-a").value;
+                const op = document.getElementById("vuln-op").value;
+                const b = document.getElementById("vuln-b").value;
+
+                // Build the calculation expression
+                const action = `${a} ${op} ${b}`;
+                sendVulnerable(action);
+            }
+
             function sendVulnerable(action) {
                 const timestamp = new Date().toLocaleTimeString();
 
